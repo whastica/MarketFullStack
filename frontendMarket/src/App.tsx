@@ -5,16 +5,11 @@ import Dashboard from "./pages/Dashboard";
 import ProductList from "./components/products/ProductList";
 import ProductForm from "./components/products/ProductForm";
 import ProductDetail from "./components/products/ProductDetail";
-/*import PurchaseList from "./components/purchases/PurchaseList";
+import PurchaseList from "./components/purchases/PurchaseList";
 import PurchaseForm from "./components/purchases/PurchaseForm";
-import PurchaseDetail from "./components/purchases/PurchaseDetail";*/
+import PurchaseDetail from "./components/purchases/PurchaseDetail";
 
 function App() {
-
-  /*
-  <Route path="/purchases" element={<PurchaseList />} />
-  <Route path="/purchases/new" element={<PurchaseForm />} />
-  <Route path="/purchases/:id" element={<PurchaseDetail />} />*/
   
   return (
     <Router>
@@ -26,6 +21,9 @@ function App() {
             <Route path="/products" element={<ProductList />} />
             <Route path="/products/new" element={<ProductForm />} />
             <Route path="/products/:id" element={<ProductDetail />} />
+            <Route path="/purchases" element={<PurchaseList />} />
+            <Route path="/purchases/new" element={<PurchaseForm />} />
+            <Route path="/purchases/:id" element={<PurchaseDetail />} />
           </Routes>
         </Container>
       </div>
