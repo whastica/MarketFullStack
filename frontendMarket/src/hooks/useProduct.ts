@@ -1,18 +1,8 @@
 import { useState } from "react";
+import { apiRequest } from "../services/apiService";
 import type { Product } from "../interfaces/Product";
 
-interface UseProductReturn {
-  products: Product[];
-  loading: boolean;
-  error: string | null;
-  fetchProducts: () => void;
-  saveProduct: (product: Partial<Product>) => Promise<void>;
-  deleteProduct: (productId: number) => Promise<void>;
-}
-
-const API_BASE_URL = "http://localhost:8090";
-
-const useProduct = (): UseProductReturn => {
+export const useProduct = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,9 +10,7 @@ const useProduct = (): UseProductReturn => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/products/all`);
-      if (!response.ok) throw new Error("Error al obtener los productos");
-      const data = await response.json();
+      const data = await apiRequest<Product[]>("/products/all");
       setProducts(data);
     } catch (err) {
       setError((err as Error).message);
@@ -34,14 +22,14 @@ const useProduct = (): UseProductReturn => {
   const saveProduct = async (product: Partial<Product>) => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/products/save`, {
+      await apiRequest<Product>("/products/save", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(product), // ✅ Convertimos el producto a JSON
       });
-      if (!response.ok) throw new Error("Error al guardar el producto");
-      await response.json();
-      fetchProducts(); // Actualiza la lista de productos después de guardar
+      fetchProducts();
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -52,11 +40,8 @@ const useProduct = (): UseProductReturn => {
   const deleteProduct = async (productId: number) => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/products/delete/${productId}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Error al eliminar el producto");
-      fetchProducts(); // Actualiza la lista de productos después de eliminar
+      await apiRequest(`/products/delete/${productId}`, { method: "DELETE" });
+      fetchProducts();
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -66,5 +51,3 @@ const useProduct = (): UseProductReturn => {
 
   return { products, loading, error, fetchProducts, saveProduct, deleteProduct };
 };
-
-export default useProduct;

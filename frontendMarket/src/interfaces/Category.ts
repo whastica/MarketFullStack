@@ -1,5 +1,5 @@
 export interface Category {
-  idCategoria: number;
-  descripcion: string;
-  estado: boolean;
+  categoryId: number;
+  category: string;
+  active: boolean;
 }
