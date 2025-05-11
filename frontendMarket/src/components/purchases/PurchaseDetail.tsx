@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Loading } from "../products/Loading";
 import { Error } from "../products/Error";
-import apiConfig from "../../api/apiConfig";
-import type {Purchase} from "../../interfaces/Purchase"
-import type {PurchaseItem}  from "../../interfaces/PurchaseItem";
+import { API_BASE_URL } from "../../api/apiConfig";
+import type { Purchase } from "../../interfaces/Purchase";
+import type { PurchaseItem } from "../../interfaces/PurchaseItem";
 
 // Definir tipos para el error personalizado
-type ErrorWithMessage = {
+interface ErrorWithMessage {
   message: string;
   name?: string;
-};
+}
 
 // Función para determinar la clase CSS según el estado
 const getStatusClass = (estado: string) => {
@@ -35,7 +35,7 @@ const useFetchPurchase = (purchaseId: string) => {
 
     const fetchPurchase = async () => {
       try {
-        const response = await fetch(`${apiConfig.baseUrl}/purchases/${purchaseId}`, {
+        const response = await fetch(`${API_BASE_URL}/purchases/${purchaseId}`, {
           signal: controller.signal,
         });
 
