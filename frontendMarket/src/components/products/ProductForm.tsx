@@ -1,18 +1,17 @@
 import { useState } from "react";
-import useProduct from "../../hooks/useProduct";
+import {useProduct} from "../../hooks/useProduct";
 import type { Product } from "../../interfaces/Product";
 import Button from "../layout/Botton";
-import {Error} from "../products/Error";
+import { Error } from "../products/Error";
 import { Loading } from "../products/Loading";
 
 const ProductForm = () => {
   const [product, setProduct] = useState<Partial<Product>>({
-    nombre: "",
-    idCategoria: 0,
-    codigoBarras: "",
-    precioVenta: 0,
-    cantidadStock: 0,
-    estado: true,
+    name: "",
+    categoryId: 0,
+    price: 0,
+    stock: 0,
+    active: true,
   });
 
   const { saveProduct, loading, error } = useProduct();
@@ -29,12 +28,11 @@ const ProductForm = () => {
     e.preventDefault();
     await saveProduct(product);
     setProduct({
-      nombre: "",
-      idCategoria: 0,
-      codigoBarras: "",
-      precioVenta: 0,
-      cantidadStock: 0,
-      estado: true,
+      name: "",
+      categoryId: 0,
+      price: 0,
+      stock: 0,
+      active: true,
     });
   };
 
@@ -49,8 +47,8 @@ const ProductForm = () => {
         <label className="block text-sm font-medium">Nombre del producto</label>
         <input
           type="text"
-          name="nombre"
-          value={product.nombre}
+          name="name"
+          value={product.name}
           onChange={handleChange}
           className="border p-2 rounded w-full"
           placeholder="Ingrese el nombre"
@@ -58,14 +56,26 @@ const ProductForm = () => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium">Precio de venta</label>
+        <label className="block text-sm font-medium">Precio</label>
         <input
           type="number"
-          name="precioVenta"
-          value={product.precioVenta}
+          name="price"
+          value={product.price}
           onChange={handleChange}
           className="border p-2 rounded w-full"
           placeholder="Ingrese el precio"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Stock</label>
+        <input
+          type="number"
+          name="stock"
+          value={product.stock}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+          placeholder="Ingrese la cantidad en stock"
         />
       </div>
 

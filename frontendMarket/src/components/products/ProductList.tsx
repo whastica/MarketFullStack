@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Button from "./../layout/Botton";  // Asegúrate de tener este componente
-import {ProductCard} from "./ProductCard";  // Asegúrate de tener este componente
+import Button from "./../layout/Botton";
+import { ProductCard } from "./ProductCard";
 import type { Product } from "../../interfaces/Product";
 import type { Category } from "../../interfaces/Category";
 import { Loading } from "./Loading";
@@ -10,32 +10,29 @@ import clsx from "clsx";
 const ProductList = () => {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
-  // Simulamos los productos con las categorías relacionadas
   const mockCategories: Category[] = [
-    { idCategoria: 1, descripcion: "Categoría 1", estado: true },
-    { idCategoria: 2, descripcion: "Categoría 2", estado: true },
+    { categoryId: 1, category: "Categoría 1", active: true },
+    { categoryId: 2, category: "Categoría 2", active: true },
   ];
 
   const mockProducts: Product[] = [
     { 
-      idProducto: 1, 
-      nombre: "Producto 1", 
-      idCategoria: 1,  // Relacionamos con la categoría 1
-      codigoBarras: "123456", 
-      precioVenta: 100, 
-      cantidadStock: 10, 
-      estado: true, 
-      categoria: mockCategories[0]  // Incluimos la categoría completa si es necesario
+      productId: 1, 
+      name: "Producto 1", 
+      categoryId: 1,  
+      price: 100, 
+      stock: 10, 
+      active: true, 
+      category: mockCategories[0]
     },
     { 
-      idProducto: 2, 
-      nombre: "Producto 2", 
-      idCategoria: 2,  // Relacionamos con la categoría 2
-      codigoBarras: "654321", 
-      precioVenta: 200, 
-      cantidadStock: 5, 
-      estado: false, 
-      categoria: mockCategories[1]  // Incluimos la categoría completa si es necesario
+      productId: 2, 
+      name: "Producto 2", 
+      categoryId: 2,  
+      price: 200, 
+      stock: 5, 
+      active: false, 
+      category: mockCategories[1]
     },
   ];
 
@@ -48,7 +45,7 @@ const ProductList = () => {
 
         if (!response.ok) throw new Error("No se pudo eliminar el producto");
 
-        window.location.reload(); // Reload para simplificar la actualización de la lista
+        window.location.reload();
       } catch (err) {
         console.error("Error eliminando producto:", err);
       }
@@ -81,8 +78,8 @@ const ProductList = () => {
         >
           <option value="">Todas las categorías</option>
           {mockCategories?.map((cat) => (
-            <option key={cat.idCategoria} value={cat.idCategoria}>
-              {cat.descripcion}
+            <option key={cat.categoryId} value={cat.categoryId}>
+              {cat.category}
             </option>
           ))}
         </select>
@@ -96,7 +93,7 @@ const ProductList = () => {
           <div className="col-span-full text-center py-10">No hay productos disponibles</div>
         ) : (
           mockProducts?.map((product) => (
-            <ProductCard key={product.idProducto} product={product} onDelete={handleDeleteProduct} />
+            <ProductCard key={product.productId} product={product} onDelete={handleDeleteProduct} />
           ))
         )}
       </div>

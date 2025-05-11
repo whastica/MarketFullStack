@@ -294,7 +294,6 @@ const PurchaseForm = () => {
                 className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 value={formData.medioPago}
                 onChange={handleMedioPagoChange}
-                required
               >
                 {mediosPago.map(medio => (
                   <option key={medio} value={medio}>
@@ -304,145 +303,83 @@ const PurchaseForm = () => {
               </select>
             </div>
           </div>
-
-          {/* Sección de productos */}
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3">Productos</h2>
-            
-            {/* Formulario para agregar productos */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Producto
-                </label>
-                <select
-                  className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                  value={selectedProductId}
-                  onChange={handleProductoChange}
-                >
-                  <option value={0}>Seleccionar producto</option>
-                  {productos.map(producto => (
-                    <option key={producto.id} value={producto.id}>
-                      {producto.nombre} - ${producto.precio} (Stock: {producto.stock})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Cantidad
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                  value={cantidad}
-                  onChange={handleCantidadChange}
-                />
-              </div>
-
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={addProducto}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                  disabled={selectedProductId === 0 || cantidad <= 0}
-                >
-                  Agregar
-                </button>
-              </div>
+          
+          {/* Selección de producto */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Producto
+              </label>
+              <select
+                className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                value={selectedProductId}
+                onChange={handleProductoChange}
+              >
+                <option value={0}>Seleccionar producto</option>
+                {productos.map(producto => (
+                  <option key={producto.id} value={producto.id}>
+                    {producto.nombre} - ${producto.precio}
+                  </option>
+                ))}
+              </select>
             </div>
-
-            {/* Tabla de productos seleccionados */}
-            <div className="bg-gray-50 rounded-lg overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Producto
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Cantidad
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Precio Unitario
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Total
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {formData.productos.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
-                        No hay productos seleccionados
-                      </td>
-                    </tr>
-                  ) : (
-                    formData.productos.map((producto) => (
-                      <tr key={producto.idProducto}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {producto.nombre}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {producto.cantidad}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          ${producto.precioUnitario.toFixed(2)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          ${(producto.cantidad * producto.precioUnitario).toFixed(2)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            type="button"
-                            onClick={() => removeProducto(producto.idProducto)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Eliminar
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                  {formData.productos.length > 0 && (
-                    <tr className="bg-gray-50">
-                      <td colSpan={3} className="px-6 py-4 text-right text-sm font-bold">
-                        TOTAL:
-                      </td>
-                      <td colSpan={2} className="px-6 py-4 text-sm font-bold">
-                        ${calcularTotal().toFixed(2)}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Cantidad
+              </label>
+              <input
+                type="number"
+                className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                value={cantidad}
+                onChange={handleCantidadChange}
+                min="1"
+                max="99"
+              />
             </div>
           </div>
 
-          {/* Mensaje de error */}
-          {error && submitting && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
-              <p>{error}</p>
-            </div>
-          )}
-
-          {/* Botones de acción */}
-          <div className="flex justify-end space-x-3">
-            <Link to="/purchases">
-                <Button color="secondary">Cancelar</Button>
-            </Link>
+          {/* Botón para agregar producto */}
+          <div className="mb-6">
             <Button 
-              type="submit" 
-              color="primary"
-              disabled={submitting || formData.productos.length === 0}
+              onClick={addProducto}
+              disabled={submitting || selectedProductId === 0 || cantidad <= 0}
             >
-              {submitting ? 'Guardando...' : 'Guardar Compra'}
+              {submitting ? 'Agregando...' : 'Agregar Producto'}
+            </Button>
+          </div>
+
+          {/* Lista de productos en el carrito */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold">Productos en el carrito</h3>
+            <ul>
+              {formData.productos.map((producto, index) => (
+                <li key={index} className="flex justify-between mb-2">
+                  <span>{producto.nombre} (x{producto.cantidad})</span>
+                  <button
+                    type="button"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => removeProducto(producto.idProducto)}
+                  >
+                    Eliminar
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Total */}
+          <div className="mb-6">
+            <strong>Total: ${calcularTotal()}</strong>
+          </div>
+
+          {/* Botón de enviar */}
+          <div className="mb-6">
+            <Button
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting ? 'Enviando...' : 'Finalizar Compra'}
             </Button>
           </div>
         </form>

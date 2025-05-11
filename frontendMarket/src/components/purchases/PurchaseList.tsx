@@ -1,26 +1,29 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import type { Purchase } from "../../interfaces/Purchase";
+import type { Purchase } from "../../interfaces/Purchase"; // Asumo que ya tienes esta interfaz
 import Button from "../layout/Botton";
-import {Loading} from "../products/Loading";
-import {Error} from "../products/Error";
+import { Loading } from "../products/Loading";
+import { Error } from "../products/Error";
+import apiConfig from "./../../api/apiConfig"; // Asegúrate de que esta ruta sea la correcta
 
-const API_BASE_URL = "http://localhost:8090";
-
-// Definir tipos para el error personalizado
-type ErrorWithMessage = {
+// Definir tipos más completos para el error
+type ApiError = {
   message: string;
-  name?: string;
+  statusCode: number;
+  errorType?: string;
 };
 
-const getStatusClass = (estado: string) => {
-  switch (estado) {
-    case "COMPLETADO":
-      return "bg-green-100 text-green-800";
-    case "CANCELADO":
-      return "bg-red-100 text-red-800";
+// Función para obtener la clase de estado
+const getStatusClass = (status: string) => {
+  switch (status) {
+    case 'Pendiente':
+      return 'bg-yellow-200 text-yellow-800'; // Clase para estado "Pendiente"
+    case 'Completada':
+      return 'bg-green-200 text-green-800'; // Clase para estado "Completada"
+    case 'Cancelada':
+      return 'bg-red-200 text-red-800'; // Clase para estado "Cancelada"
     default:
-      return "bg-yellow-100 text-yellow-800";
+      return 'bg-gray-200 text-gray-800'; // Clase por defecto
   }
 };
 
@@ -40,28 +43,26 @@ const TableHeader = () => (
 );
 
 const TableRow = ({ purchase }: { purchase: Purchase }) => (
-  <tr key={purchase.idCompra}>
+  <tr key={purchase.purchaseId}>
     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-      {purchase.idCompra}
+      {purchase.purchaseId}
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-      {purchase.cliente
-        ? `${purchase.cliente.nombre} ${purchase.cliente.apellido}`
-        : purchase.idCliente}
+      {purchase.clientId} {/* Puedes actualizar esto si quieres asociarlo con un cliente real */}
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-      {new Date(purchase.fecha).toLocaleDateString()}
+      {new Date(purchase.date).toLocaleDateString()}
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-      {purchase.medioPago}
+      {purchase.paymentMethod}
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
-      <span className={`px-2 inline-flex text-xs font-semibold rounded-full ${getStatusClass(purchase.estado)}`}>
-        {purchase.estado}
+      <span className={`px-2 inline-flex text-xs font-semibold rounded-full ${getStatusClass(purchase.state)}`}>
+        {purchase.state}
       </span>
     </td>
     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-      <Link to={`/purchases/${purchase.idCompra}`} className="text-blue-600 hover:text-blue-900">
+      <Link to={`/purchases/${purchase.purchaseId}`} className="text-blue-600 hover:text-blue-900">
         Ver detalles
       </Link>
     </td>
@@ -76,37 +77,32 @@ const PurchaseList = () => {
   useEffect(() => {
     const controller = new AbortController();
 
-    const fetchPurchases = async () => { 
+    const fetchPurchases = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/purchases/all`, { signal: controller.signal });
-        if (!response.ok) {
-          // Usar un objeto literal en vez de Error constructor
-          const customError: ErrorWithMessage = { 
-            message: "No se pudieron cargar las compras",
-            name: "FetchError"
-          };
-          throw customError;
-        }
-        const data = await response.json();
-        setPurchases(data);
-      } catch (err: unknown) {
-        // Verificar si el error es un objeto con una propiedad message
-        const isErrorWithMessage = (value: unknown): value is ErrorWithMessage => 
-          typeof value === 'object' && 
-          value !== null && 
-          'message' in value &&
-          typeof (value as Record<string, unknown>).message === 'string';
-        
-        if (isErrorWithMessage(err)) {
-          // Ahora TypeScript sabe que err tiene una propiedad message de tipo string
-          const errorObj = err;
-          
-          // Verificar si tiene la propiedad name y no es AbortError
-          if (!('name' in errorObj) || errorObj.name !== "AbortError") {
-            setError(errorObj.message);
-          }
+        const cachedPurchases = localStorage.getItem("purchases");
+        if (cachedPurchases) {
+          setPurchases(JSON.parse(cachedPurchases));
+          setLoading(false);
         } else {
-          // Fallback para cualquier otro tipo de error
+          const response = await fetch(`${apiConfig.baseUrl}/purchases/all`, { signal: controller.signal });
+          if (!response.ok) {
+            const customError: ApiError = {
+              message: "No se pudieron cargar las compras",
+              statusCode: response.status,
+            };
+            throw customError;
+          }
+          const data = await response.json();
+          setPurchases(data);
+          localStorage.setItem("purchases", JSON.stringify(data));
+        }
+      } catch (err: unknown) {
+        const isApiError = (value: unknown): value is ApiError =>
+          typeof value === "object" && value !== null && "message" in value && "statusCode" in value;
+
+        if (isApiError(err)) {
+          setError(`Error ${err.statusCode}: ${err.message}`);
+        } else {
           setError("Ocurrió un error inesperado.");
         }
       } finally {
@@ -138,11 +134,11 @@ const PurchaseList = () => {
             {purchases.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
-                  No hay compras registradas
+                  {loading ? "Cargando..." : "No hay compras registradas"}
                 </td>
               </tr>
             ) : (
-              purchases.map((purchase) => <TableRow key={purchase.idCompra} purchase={purchase} />)
+              purchases.map((purchase) => <TableRow key={`${purchase.purchaseId}-${purchase.date}`} purchase={purchase} />)
             )}
           </tbody>
         </table>
