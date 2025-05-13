@@ -13,6 +13,7 @@ const ProductDetail = () => {
   if (error) return <Error message={error} />;
   if (!product) return <Error message="Producto no encontrado" />;
 
+  
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       <div className="p-6">

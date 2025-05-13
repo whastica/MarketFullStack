@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import StatCard from "../pages/StatCard";
-
-const API_BASE_URL = "http://localhost:8090";
+import { API_BASE_URL } from "../api/apiConfig";
 
 function Dashboard() {
   const [productCount, setProductCount] = useState<number | null>(null);

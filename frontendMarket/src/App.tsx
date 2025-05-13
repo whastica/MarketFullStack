@@ -22,6 +22,7 @@ function App() {
             <Route path="/products/new" element={<ProductForm />} />
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/purchases" element={<PurchaseList />} />
+            console.log("VITE_API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
             <Route path="/purchases/new" element={<PurchaseForm />} />
             <Route path="/purchases/:id" element={<PurchaseDetail />} />
           </Routes>
